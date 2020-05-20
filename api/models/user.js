@@ -14,9 +14,16 @@ async function queryUser(fname='',lname='',email='') {
 }
 
 async function findUser(userid) {  
-  const sql = "SELECT users.id, users.firstname, users.lastname, users.email, groups.name, groups.description FROM users LEFT JOIN user_groups ug ON ug.user_id = users.id LEFT JOIN groups ON groups.id = ug.group_id  WHERE users.id = ?";
+  const sql = "SELECT users.id, users.firstname, users.lastname, users.email, groups.name, groups.id groupid, groups.description FROM users LEFT JOIN user_groups ug ON ug.user_id = users.id LEFT JOIN groups ON groups.id = ug.group_id  WHERE users.id = ?";
   // const sql = "SELECT * FROM users WHERE id=?";
   const result = await db.promise().query(sql,[userid]);
+  return result;
+}
+
+async function findUser1(userid,groupid) {  
+  const sql = "SELECT users.id, users.firstname, users.lastname, users.email, groups.name, groups.id groupid, groups.description FROM users LEFT JOIN user_groups ug ON ug.user_id = users.id LEFT JOIN groups ON groups.id = ug.group_id  WHERE ug.user_id=? AND ug.group_id=?";
+  // const sql = "SELECT * FROM users WHERE id=?";
+  const result = await db.promise().query(sql,[userid,groupid]);
   return result;
 }
 
@@ -79,4 +86,4 @@ async function deleteUser(form) {
   return result;
 }
 
-module.exports = {isUserExist,queryUser,findUser,allUser,addUser,addGroup,userGroup,updateUser,deleteUser};
+module.exports = {isUserExist,queryUser,findUser,findUser1,allUser,addUser,addGroup,userGroup,updateUser,deleteUser};

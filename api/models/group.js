@@ -13,6 +13,7 @@ async function findGroup(groupid) {
   return result;
 }
 
+
 async function allGroups() {  
   const sql = 'SELECT * from groups'
   const result = await db.promise().query(sql);

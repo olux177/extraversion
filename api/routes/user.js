@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const {isUserExist,queryUser,findUser,allUser,addUser,addGroup,userGroup,updateUser,deleteUser} = require('../models/user')
+const {isUserExist,queryUser,findUser,findUser1,allUser,addUser,addGroup,userGroup,updateUser,deleteUser} = require('../models/user')
 const {findGroup} = require('../models/group')
 
 /* GET users listing. */
@@ -25,22 +25,22 @@ router.get('/find', function(req, res, next) {
   findUser(req.query.id).then(([rows])=>{
     // console.log(buildTree (rows,'name'));
     const groups=[];
-    const groupObj={};
-
-    const user = rows.map((item)=>{
-      const userObj = {}
-      userObj.firstname=item.firstname
-      userObj.lastname=item.lastname
-      userObj.email=item.email
-      userObj.groups=null
+    const user = {}
+    rows.forEach((item)=>{
+      const group = {}
+      user.firstname=item.firstname
+      user.lastname=item.lastname
+      user.email=item.email
+      group.id=item.groupid
+      group.name=item.name
+      group.description=item.description
+      user.groups=[]
       if(item.name){
-        userObj.groups=[
-          {name:item.name,description:item.description},
-        ]
-      }
-      return userObj;
-    })
-    
+        groups.push(group )
+        user.groups=groups
+      }      
+      return user;
+    })    
     res.send({data:user, total:rows.length});
   }).catch((err)=>{
     throw err
@@ -52,12 +52,12 @@ const buildTree = (data, parent=null) => {
   data.forEach((node) => {
     
     if(node.name === node[parent]){
-      const children = buildTree(data, node.name);
+      // const children = buildTree(data, node.name);
       console.log(children);
       
-      if(children.length>0){         
-        node['groups'] = children;
-      }
+      // if(children.length>0){         
+      //   node['groups'] = children;
+      // }
       result.push(node)
     }
   })
@@ -84,12 +84,15 @@ router.post('/add', function(req, res, next) {
 router.post('/addgroup', function(req, res, next) {
   const userid = req.body.userid;
   const groupid = req.body.groupid;
-  findUser(userid).then(([rows])=>{ 
-    findGroup(groupid).then(([rows])=>{
+  findUser1(userid,groupid).then(([rows])=>{
+    if (rows.length>0) {
+      res.send({msg:`User is already added to group`});
+    }
+    else {     
       addGroup(userid,groupid).then(()=>{
         res.send({msg:`User is added to group`});
       })
-    })
+    }    
   })
 });
 /* FIND user. */
