@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>A	simple	browser	based	game	engine </title>
+    <style>
+      body { background: #eee; }
+      canvas { 
+        background: #fff;
+        border: 5px solid #999;
+        position: absolute;
+        margin: -160px 0 0 -240px;
+        top: 50%;
+        left: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>bouncing	ball	trapped	in	a	box</h1>
+    <p>Produce	a	HTML5-canvas interactive	animation	that	simulates	a	bouncing	ball	trapped	in	a	box	under	the	effects	of gravity. </p>
+    <canvas id="myCanvas" width="480" height="320"></canvas>
+    
+    <script>
+      var canvas = document.getElementById("myCanvas");
+      var ctx = canvas.getContext("2d");
+      var ballRadius = 18;
+      var x = canvas.width/2;
+      var y = canvas.height-30;
+      var dx,dy;
+      
+      
+      function drawBall() {
+        ctx.save()
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI*2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+        ctx.restore()
+      }
+
+      function moveBall() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+          
+        if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+          dx = -dx;
+        }
+        if(y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
+          dy = -dy;
+        }
+          
+        x += dx;
+        y += dy;
+      }
+      
+      canvas.addEventListener("mousemove", function(e){
+        clearInterval(moveBall);
+        moveBall();
+        x = e.pageX-(canvas.width/2.5);
+        y = e.pageY-(canvas.height/2);
+      });
+      canvas.addEventListener("click", function(e){
+        const timer=10
+        dx=1;
+        dy=-3;
+        clearInterval(moveBall);
+        setInterval(moveBall, timer);        
+      });             
+    </script>
+  </body>
+</html>
